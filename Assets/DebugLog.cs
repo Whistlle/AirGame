@@ -1,90 +1,65 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
-
-public class DebugLog : MonoBehaviour
+public class GuiTextDebug : MonoBehaviour
 {
-    static List<string> mLines = new List<string>();
-    static List<string> mWriteTxt = new List<string>();
-    private string outpath;
+    private float windowPosition = -440.0f;
+    private int positionCheck = 2;
+    private static string windowText = "";
+    private Vector2 scrollViewVector = Vector2.zero;
+    private GUIStyle debugBoxStyle;
+
+    private float leftSide = 0.0f;
+    private float debugWidth = 420.0f;
+
+    public bool debugIsOn = false;
+
+    public static void debug(string newString)
+    {
+        windowText = newString + "\n" + windowText;
+        UnityEngine.Debug.Log(newString);
+    }
+
     void Start()
     {
-        //Application.persistentDataPath Unity中只有这个路径是既可以读也可以写的。
-        outpath = Application.persistentDataPath + "/outLog.txt";
-        //每次启动客户端删除之前保存的Log
-        if (System.IO.File.Exists(outpath))
-        {
-            File.Delete(outpath);
-        }
-        //在这里做一个Log的监听
-        Application.logMessageReceived += HandleLog;
-        //一个输出
-        Debug.Log("xuanyusong");
+        debugBoxStyle = new GUIStyle();
+        debugBoxStyle.alignment = TextAnchor.UpperLeft;
+        leftSide = 120;
     }
 
-    void Update()
-    {
-        //因为写入文件的操作必须在主线程中完成，所以在Update中哦给你写入文件。
-        if (mWriteTxt.Count > 0)
-        {
-            string[] temp = mWriteTxt.ToArray();
-            foreach (string t in temp)
-            {
-                using (StreamWriter writer = new StreamWriter(outpath, true, Encoding.UTF8))
-                {
-                    writer.WriteLine(t);
-                }
-                mWriteTxt.Remove(t);
-            }
-        }
-    }
-
-    void HandleLog(string logString, string stackTrace, LogType type)
-    {
-        mWriteTxt.Add(logString);
-        if (type == LogType.Error || type == LogType.Exception)
-        {
-            Log(logString);
-            Log(stackTrace);
-        }
-    }
-
-    //这里我把错误的信息保存起来，用来输出在手机屏幕上
-    static public void Log(params object[] objs)
-    {
-        string text = "";
-        for (int i = 0; i < objs.Length; ++i)
-        {
-            if (i == 0)
-            {
-                text += objs[i].ToString();
-            }
-            else
-            {
-                text += ", " + objs[i].ToString();
-            }
-        }
-        if (Application.isPlaying)
-        {
-            if (mLines.Count > 20)
-            {
-                mLines.RemoveAt(0);
-            }
-            mLines.Add(text);
-
-        }
-    }
 
     void OnGUI()
     {
-        GUI.color = Color.red;
-        for (int i = 0, imax = mLines.Count; i < imax; ++i)
+        if (debugIsOn)
         {
-            GUILayout.Label(mLines[i]);
+            GUI.depth = 0;
+            GUI.BeginGroup(new Rect(windowPosition, 40.0f, leftSide, 200.0f));
+
+            scrollViewVector = GUI.BeginScrollView(new Rect(0, 0.0f, debugWidth, 200.0f),
+                                                            scrollViewVector,
+                                                            new Rect(0.0f, 0.0f, 400.0f, 2000.0f));
+            GUI.Box(new Rect(0, 0.0f, debugWidth - 20.0f, 2000.0f), windowText, debugBoxStyle);
+            GUI.EndScrollView();
+
+            GUI.EndGroup();
+
+            if (GUI.Button(new Rect(leftSide, 0.0f, 75.0f, 40.0f), "调试"))
+            {
+                if (positionCheck == 1)
+                {
+                    windowPosition = -440.0f;
+                    positionCheck = 2;
+                }
+                else
+                {
+                    windowPosition = leftSide;
+                    positionCheck = 1;
+                }
+            }
+
+            if (GUI.Button(new Rect(leftSide + 80f, 0.0f, 75.0f, 40.0f), "清除"))
+            {
+                windowText = "";
+            }
         }
     }
 }
-

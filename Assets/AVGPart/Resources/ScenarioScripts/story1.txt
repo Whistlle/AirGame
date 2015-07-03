@@ -1,0 +1,22 @@
+//init
+[reg_textbox name=Main type=main]
+[actor_new name=actor]
+[actor_new name=alien]
+[preload_scene name=game]
+
+[bg_change name=space]
+[enterscene fadetime=2]
+
+
+[cm]
+
+[enteractor name=alien pos=left fade=true]
+
+『地球的空气污染已经非常的糟糕，现在整个城市都在一片雾霾当中。这次派你来到地球，希望你可以收集其中的污染物，把地球净化成原本蓝色的星球。可是一定要注意当中的危险！ 』[p]
+
+
+[enteractor name=actor pos=right fade=true]
+
+『遵命！我一定会完成这次的任务，把地球变回原本蓝色的星球。我已经准备好了，现在马上出发！ 』[p]
+
+[loadscene name=game]

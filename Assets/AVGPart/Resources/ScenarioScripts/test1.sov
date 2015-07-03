@@ -1,0 +1,65 @@
+*Demonstration(English)
+*Demonstration(English)/START
+*Demonstration(English)/START/1_Dialog
+[enterscene name=Schoolgate destroy=true fade=true]
+[wait time=1000]
+*Demonstration(English)/START/1_Dialog
+[cm]
+[current layer=TextBox]
+
+[enteractor name=Sachi position=center fade=true]
+
+
+[settext text=Sachi textbox=TextBox_Name]
+Nice to meet you.[r]
+
+[settext text=Sachi textbox=TextBox_Name]
+Hi ! My name is Sachi.[p]
+
+Let's change her face.[p]
+
+[changestate name=Sachi state=Smile fade=true]
+
+Shake TextBox[p]
+
+[shake name=TextBox]
+
+
+[moveactor name=Sachi position=left]
+
+
+[enteractor name=Yoshino position=right fade=true]
+
+
+[settext text=Yoshino textbox=TextBox_Name]
+Hi , Sachi.[p]
+
+Change the message Target.[p]
+
+*Demonstration(English)/START/2_Dialog_BG
+[cm]
+[current layer=TextBox_BG]
+
+The Message target has changed to the TextBox_BG.[p]
+
+Return to the Original Target.[p]
+
+*Demonstration(English)/START/3_Dialog
+[cm]
+[current layer=TextBox]
+
+The Message Target has returned to the original Target.[p]
+
+You can also display options.[p]
+
+[link target=*START/4_Selections/1_Selected1]View from the beginning.[endlink][r]
+[link target=*START/4_Selections/2_Selected2]Finish this demo.[endlink][r]
+[s]
+*START/4_Selections/1_Selected1
+[jump target=*Demonstration(English)/START]*START/4_Selections/2_Selected2
+*4_Selections/2_Selected2/Finish
+[cm]
+[current layer=TextBox]
+
+Finish this demo.[p]
+

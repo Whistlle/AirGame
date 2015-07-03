@@ -1,28 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Loading : MonoBehaviour {
-
-    int progress = 0;
-    AsyncOperation async;
-    public string NextScene;
-    void Start()
+namespace Sov.AVGPart
+{
+    public class Loading : MonoBehaviour
     {
-        StartCoroutine(loadScene());
+        AsyncOperation async = null;
+        public string NextScene;
+
+        public string ScenarioName;
+        public string ScenarioFileName;
+
+        Scene s = null;
+
+        // Use this for initialization
+        void Start()
+        {
+            ScenarioName = "story";
+            ScenarioFileName = "story1";
+            NextScene = "loadingStory";
+            // ScriptEngine.Instance.LoadScript(ScriptFileName);
+            s = new Scene(ScenarioFileName);
+            s.Name = ScenarioName;
+            ScenarioManager.Instance.PrePhraseScenarioAsync(s);
+            StartCoroutine(LoadA());
+        }
+
+        IEnumerator LoadA()
+        {
+            async = Application.LoadLevelAsync(NextScene);
+            async.allowSceneActivation = false;
+            yield return async;
+                   
+        }
+
+        void Update()
+        {
+            if(s != null && s.IsPhraseFinish)
+            {
+                async.allowSceneActivation = true;  
+            }
+        }
     }
-
- 
-
-    //注意这里返回值一定是 IEnumerator
-    IEnumerator loadScene()
-    {
-        async = Application.LoadLevelAsync(NextScene);
-        //读取完毕后返回， 系统会自动进入C场景
-        yield return async;
-    }
-	
-	// Update is called once per frame
-	void Update () {
-
-	}
 }
+

@@ -1,0 +1,178 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using Sov.MessageNotificationCenter;
+
+namespace Sov.AVGPart
+{
+    /*
+     * TextBoxesManager
+     * 挂在GameObject上以管理TextBox
+     */
+    class TextBoxesManager : MonoBehaviour
+    {
+        public static TextBoxesManager Instance
+        {
+            get
+            {
+                if (_sharedTextBoxesManager == null)
+                {
+                    Debug.Log("Do not have TextBoxManager");
+                    
+                }
+                return _sharedTextBoxesManager;
+            }
+        }
+
+        public TextBox GetCurrentMainTextBox() { return _currentMainTextBox; }
+
+        void Awake()
+        {
+           
+            _sharedTextBoxesManager = this;
+            //注册监听事件
+            MessageListener setTextListener = new MessageListener("EVENT_SETTEXT",
+                                                                OnSetText);
+            MessageListener printListener = new MessageListener("EVENT_PRINT",
+                                                                OnPrintText);
+            MessageListener currentListener = new MessageListener("EVENT_CURRENT",
+                                                                OnCurrent);
+            MessageListener hideMsgBoxListener = new MessageListener("EVENT_HIDE_TEXTBOX",
+                                                                OnHideMsgBox);
+
+            MessageListener ClearMsgListener = new MessageListener("EVENT_CLEAR_MESSAGE",
+                                                                OnClearMessage);
+
+            MessageDispatcher.Instance.RegisterMessageListener(ClearMsgListener);
+            MessageDispatcher.Instance.RegisterMessageListener(setTextListener);
+            MessageDispatcher.Instance.RegisterMessageListener(printListener);
+            MessageDispatcher.Instance.RegisterMessageListener(currentListener);
+            MessageDispatcher.Instance.RegisterMessageListener(hideMsgBoxListener);
+
+            _textBoxes = new Dictionary<string, TextBox>();
+            _currentMainTextBox = TextBoxesInScene[0];
+            RegisterTextBoxesInScene();
+        }
+
+        //Instance
+        static TextBoxesManager _sharedTextBoxesManager = null;
+
+        //textBoxs to print name, backlog and so on
+      //  Dictionary<string, TextBox> _otherTextBoxes;
+
+        //the main textBoxes to print text
+        //change by command [layer] 
+     //   Dictionary<string, TextBox> _mainTextBoxes;
+
+        
+        public TextBox[] TextBoxesInScene;
+
+        //registered textBox above
+        Dictionary<string, TextBox> _textBoxes;
+
+
+        TextBox _currentMainTextBox;
+
+        //TextBox Click Event
+        public void OnClickNextMessage()
+        {
+
+        }
+
+        #region       Message Events
+
+        //tag: settext
+        void OnSetText(Message pEvent)
+        {
+            Debug.Log("on Set Text");
+            OpCommand data = (OpCommand)pEvent.UserData;
+
+            string boxName = data.Params["textbox"];
+            if (_textBoxes.ContainsKey(boxName)) //TODO: 异常
+            {
+                string text = data.Params["text"];
+                TextBox textbox = _textBoxes[boxName];
+                textbox.ClearMessage();
+               // textbox.ShowTextBox();
+                textbox.SetText(text);
+            }
+        }
+        
+        //tag: print
+        void OnPrintText(Message pEvent)
+        {
+            Debug.Log("[Print Text]");
+            OpCommand data = (OpCommand)pEvent.UserData;
+
+            string text = data.Params["text"];
+
+            _currentMainTextBox.SetText(text);
+        }
+
+        //hide messagebox
+        void OnHideMsgBox(Message pEvent)
+        {
+            Debug.Log("[Hide Msg Box]");
+            string textboxName = (string)pEvent.UserData;
+
+            TextBox box;
+            if (_textBoxes.ContainsKey(textboxName))
+            {
+                box = _textBoxes[textboxName];
+                box.HideTextBox();
+            }
+            else if (_textBoxes.ContainsKey(textboxName))
+            {
+                box = _textBoxes[textboxName];
+                box.HideTextBox();
+            }
+        
+        }
+
+        //change current main text box
+        void OnCurrent(Message message)
+        {
+            Debug.Log("[on Current]");
+            OpCommand data = (OpCommand)message.UserData;
+            string layer;
+
+            if (data.Params.ContainsKey("layer"))
+            {
+                layer = data.Params["layer"];
+                if (_textBoxes.ContainsKey(layer))
+                {
+                    Debug.LogFormat("change main textbox to: {0}", layer);
+                    _currentMainTextBox = _textBoxes[layer];
+                    _currentMainTextBox.SetVisible(true);
+                }
+                else
+                {
+                    Debug.LogFormat("can not change main textbox: {0}", layer);
+                }
+            }
+            else
+            {
+                Debug.LogFormat("message do not have this layer: {0}", message.MessageName);
+            }
+        }
+
+        //Tag: [CM]
+        void OnClearMessage(Message message)
+        {
+            _currentMainTextBox.ClearMessage();
+        }
+
+        #endregion
+
+        void RegisterTextBoxesInScene()
+        {
+            foreach (TextBox tb in TextBoxesInScene)
+            {
+                _textBoxes.Add(tb.Name, tb);
+            }
+        }
+
+ 
+        
+    };
+}
