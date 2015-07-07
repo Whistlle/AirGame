@@ -2,11 +2,9 @@
 [reg_textbox name=Main type=main]
 [actor_new name=actor]
 [actor_new name=alien]
-[preload_scene name=game]
 
-[bg_change name=space]
+[bg_new name=space]
 [enterscene fadetime=2]
-
 
 [cm]
 
@@ -19,4 +17,4 @@
 
 『遵命！我一定会完成这次的任务，把地球变回原本蓝色的星球。我已经准备好了，现在马上出发！ 』[p]
 
-[loadscene name=game]
+[loadscene name=loading]

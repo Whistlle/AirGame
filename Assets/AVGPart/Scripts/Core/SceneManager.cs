@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
+
 namespace Sov.AVGPart
 {
     /*
@@ -40,36 +42,39 @@ namespace Sov.AVGPart
         public void PreLoadScene(string name)
         {
             //StartCoroutine(PreLoadingScene(name));
-            AsyncOperation op = Application.LoadLevelAsync(name);
-            _asyncLoadScene.Add(name, op);
-            op.allowSceneActivation = false;
+           // Thread t = new Thread(() =>
+           // {
+               // AsyncOperation op = Application.LoadLevelAsync(name);
+               // _asyncLoadScene.Add(name, op);
+               // op.allowSceneActivation = false;
+            StartCoroutine(PreLoadingScene(name));
+           // });
+            //t.Start();
+            
         }
         //加载到90%时停止
         IEnumerator PreLoadingScene(string scene)
-        {            
+        {        
+            yield return new WaitForEndOfFrame();
             AsyncOperation op = Application.LoadLevelAsync(scene);
 
             _asyncLoadScene.Add(name, op);
 
             op.allowSceneActivation = false;
-
-            while (op.progress < 1.0f)
-            {
-                if(op.progress >=0.9f)
-                {
-                    break;
-                }
-                yield return new WaitForEndOfFrame();
-
-            }
-
-            op.allowSceneActivation = false;
+            yield return op;
         }
 
         public void LoadScene(string scene)
         {
-            AsyncOperation op = _asyncLoadScene[scene];
-            op.allowSceneActivation = true;
+            if (_asyncLoadScene.ContainsKey(scene))
+            {
+                AsyncOperation op = _asyncLoadScene[scene];
+                op.allowSceneActivation = true;
+            }
+            else
+            {
+                Application.LoadLevel(scene);
+            }
             //StartCoroutine(LoadSceneLoaded(scene));
         }
 

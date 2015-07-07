@@ -122,6 +122,8 @@ namespace Sov.AVGPart
 
             var ui = UICanvas.GetComponent<CanvasGroup>().DOFade(1, float.Parse(Params["fadetime"]));
             var bg = BGCanvas.GetComponent<CanvasGroup>().DOFade(1, float.Parse(Params["fadetime"]));
+
+            ImageManager.Instance.ShowBackground(0.0f);
             bg.OnComplete(new TweenCallback(OnFinishAnimation));
         }
         public override void OnFinishAnimation()

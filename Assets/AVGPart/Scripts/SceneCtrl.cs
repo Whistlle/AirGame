@@ -9,16 +9,16 @@ public class SceneCtrl : MonoBehaviour
 	// Use this for initialization
     void Awake()
     {
-       
+       ScenarioName = "story";
+      //  ScenarioManager.Instance.RunLoadedScenario(ScenarioName);
+        s = new Scene("story1");
+        s.Name = name;
+        s.LoadScript();
+        
     }
 	void Start () 
     {
-        ScenarioName = "story";
-        ScenarioManager.Instance.RunLoadedScenario(ScenarioName);
-       // Scene s = new Scene("story1");
-       // s.Name = name;
-       // s.LoadScript();
-        //ScriptEngine.Instance.Run(s);
+        ScriptEngine.Instance.Run(s);
 	}
 	
 	// Update is called once per frame

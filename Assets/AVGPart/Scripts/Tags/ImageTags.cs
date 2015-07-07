@@ -50,6 +50,7 @@ namespace Sov.AVGPart
             //ImageObject io = ImageManager.Instance.GetImageObjectInScene(objName);
             //ImageObject io = ImageManager.Instance.GetObjectInScene<ImageObject>(objName);
             ImageObject io = ImageManager.Instance.GetObjectInScene<ImageObject>(objName);
+ 
             io.OnAnimationFinish = OnFinishAnimation;
             if (Params["fade"] == "true")
             {
@@ -92,7 +93,9 @@ namespace Sov.AVGPart
      * @name:       File name
      * @path:       Relative Path To the "/Resources/"
      * @x,y,z:      position of the image to set
-     * //@show:       show immediately?
+     * @root:       the parent of the gameobject in hierarchy
+     * //@show:     show immediately?
+     * @PrefabName  create by prefab or new Gameobject()
      * 
      * <sample>
      * [image_new name=sachi path=actor/]
@@ -102,13 +105,15 @@ namespace Sov.AVGPart
         public Image_newTag()
         {
             _defaultParamSet = new Dictionary<string,string>() {
-                { "objname", "new_image"},
-                { "name",    ""         },
-                { "path",    ""         },
-                { "x",       "0"        },
-                { "y",       "0"        },
-                { "z",       "0"        },
-                { "scale",   "1"        },
+                { "objname",    "new_image"},
+                { "name",       ""         },
+                { "path",       ""         },
+                { "x",          "0"        },
+                { "y",          "0"        },
+                { "z",          "0"        },
+                { "scale",      "1"        },
+                { "root",       ""         },
+                { "PrefabName", ""         }
                // { "show",    "false"    },
                // { "fade",    "false"    },
                // { "fadetime","0"        },

@@ -33,7 +33,7 @@ namespace Sov.AVGPart
             TObject obj = new TObject();
             obj.Init(info);
 
-            _objectInScene.Add(info.Name, obj);
+            _objectInScene.Add(info.ObjName, obj);
             return obj;
 
         }
@@ -65,6 +65,19 @@ namespace Sov.AVGPart
                 _objectInScene.Add(objName, ao);
                 return ao;
             }
+        }
+
+        public void ShowBackground(float fadetime)
+        {
+            ImageObject io = ImageManager.Instance.GetObjectInScene<ImageObject>("Background");
+            io.OnAnimationFinish = () =>
+            {
+                Debug.Log("Finish Animation!");
+               // ScriptEngine.Instance.Status.EnableNextCommand = true;
+               // ScriptEngine.Instance.NextCommand();
+            };
+            io.FadeIn(fadetime);
+
         }
     }
 }

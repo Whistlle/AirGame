@@ -16,14 +16,15 @@ namespace Sov.AVGPart
         // Use this for initialization
         void Start()
         {
-            ScenarioName = "story";
-            ScenarioFileName = "story1";
-            NextScene = "loadingStory";
+            ScenarioName = "game";
+          //  ScenarioFileName = "story1";
+            NextScene = "game";
             // ScriptEngine.Instance.LoadScript(ScriptFileName);
-            s = new Scene(ScenarioFileName);
-            s.Name = ScenarioName;
-            ScenarioManager.Instance.PrePhraseScenarioAsync(s);
-            StartCoroutine(LoadA());
+            //s = new Scene(ScenarioFileName);
+            //s.Name = ScenarioName;
+            //ScenarioManager.Instance.PrePhraseScenarioAsync(s);
+           // StartCoroutine(LoadA());
+            Application.LoadLevel(NextScene);
         }
 
         IEnumerator LoadA()

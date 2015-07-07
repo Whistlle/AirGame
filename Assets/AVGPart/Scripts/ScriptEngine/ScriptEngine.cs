@@ -240,20 +240,27 @@ namespace Sov.AVGPart
             Debug.Log("Run Script!");
             StartCoroutine(OnRun());
         }
-
+        /*
         public void Run(Scene scene)
         {
             _currentScene = scene;
             Debug.Log("Run Script!");
             StartCoroutine(OnRun());
-        }
+        }*/
 
+        public void Run(Scene scene)
+        {
+            _currentScene = scene;
+            Debug.Log("Run Script!");
+            OnRunScript();
+        }
         public void NextCommand()
         {
-            _currentLine++;
-
-           // if (_currentLine < _opTags.Count)
-           //     ExcuteCommand();
+            if (_currentLine + 1 < _opTags.Count && Status.EnableNextCommand)
+            {
+                _currentLine++;
+                ExcuteCurrentCommand();
+            }
         }
         /*
         void ExcuteCommand()
@@ -289,6 +296,25 @@ namespace Sov.AVGPart
                 }
             }
         }
+
+        void ExcuteCurrentCommand()
+        {
+            _currentScene.Status.SkipThisTag = false;
+
+            int currentLine = _currentScene.CurrentLine;
+            List<AbstractTag> tags = _currentScene.Tags;
+
+            if (currentLine < tags.Count)
+            {
+                tags[currentLine].Before();
+                if (!Status.SkipThisTag)
+                {
+                    Status.EnableNextCommand = true;
+                    tags[currentLine].Excute();
+                    tags[currentLine].After();
+                }
+            }
+        }
         #endregion
 
         #region   Private Method
@@ -311,7 +337,12 @@ namespace Sov.AVGPart
             }
         }
 
-       
+        void OnRunScript()
+        {
+            if (Status.EnableNextCommand)
+                ExcuteCommand();
+
+        }
         bool DispatchMessage(Message e)
         {
             return MessageDispatcher.Instance.DispatchMessage(e);
@@ -337,8 +368,9 @@ namespace Sov.AVGPart
             NextLine();*/
             if (Status.EnableClickContinue)
             {
-                _currentLine++;
+                //_currentLine++;
                 Status.EnableNextCommand = true;
+                NextCommand();
             }
             //NextCommand();
         }

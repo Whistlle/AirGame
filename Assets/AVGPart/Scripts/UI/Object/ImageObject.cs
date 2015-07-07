@@ -8,6 +8,55 @@ using DG.Tweening;
 
 namespace Sov.AVGPart
 {
+    
+    class ImageInfo : ObjectInfo
+    {
+        public string Path = "";
+        public Vector3 Position = new Vector3(0, 0, 0);
+        public bool Show = false;
+        public bool Fade = false;
+        public float Fadetime = 0.0f;
+        public string Root = "";
+        public float Scale = 1;
+        public string PrefabName = "";
+
+        public ImageInfo(Dictionary<string, string> param)
+        {
+            if (param.ContainsKey("objname"))
+            {
+                ObjName = param["objname"];
+            }
+            if (param.ContainsKey("name"))
+            {
+                Name = param["name"];
+            }
+            if (param.ContainsKey("path"))
+            {
+                Path = param["path"];
+            }
+            if (param.ContainsKey("show"))
+            {
+                Show = bool.Parse(param["show"]);
+            }
+            if (param.ContainsKey("fadeTime"))
+            {
+                Fadetime = float.Parse(param["fadeTime"]);
+            }
+            if (param.ContainsKey("root"))
+            {
+                Root = param["root"];
+            }
+            if (param.ContainsKey("scale"))
+            {
+                Scale = float.Parse(param["scale"]);
+            }
+            if (param.ContainsKey("PrefabName"))
+            {
+                PrefabName = param["PrefabName"];
+            }
+        }
+    }
+
     class ImageObject:AbstractObject
     {
         Image _image;
@@ -31,15 +80,46 @@ namespace Sov.AVGPart
             
             _info = (ImageInfo)info;
 
-            Go = new GameObject(info.ObjName);
-
-            _image = Go.AddComponent<Image>();
+            //TODO: create by prefab
+            //TODO: 同一加载管理Prefab
+            if (_info.PrefabName != "")
+            {
+                Go = Resources.Load<GameObject>(_info.PrefabName);
+                if (Go == null)
+                {
+                    Go = new GameObject(info.ObjName);
+                    _image = Go.AddComponent<Image>();
+                }
+                else
+                {
+                    Go = GameObject.Instantiate(Go);
+                    _image = Go.GetComponent<Image>();
+                }
+            }
+            else
+            {
+                Go = new GameObject(info.ObjName);
+                _image = Go.AddComponent<Image>();
+            }
+            
+            //set gameobject name
+            Go.name = _info.ObjName;
             //create image
             Sprite i = Resources.Load<Sprite>(_info.Path + _info.Name);
             if (i == null)
             {
                 Debug.LogFormat("Cannot load image file:{0}", _info.Path + _info.Name);
             }
+            _image.sprite = i;
+            //set root
+            GameObject parent = GameObject.Find(_info.Root);
+            if(parent)
+            {
+                Go.transform.SetParent(parent.transform, false);
+            }
+            _image.SetNativeSize();
+
+            Go.SetActive(false);
         }
 
         public override void Init(string objName)
@@ -126,8 +206,16 @@ namespace Sov.AVGPart
         {
             Sprite i = Resources.Load<Sprite>(newImageFileName);
             _image.sprite = i;
-            FadeIn(fadeTime);
-            //   Sequence s = DOTween.Sequence();
+            if (fadeTime == 0)
+            {
+                //Go.SetActive(true);
+                
+                OnAnimationFinish();
+            }
+            else
+            {
+                FadeIn(fadeTime);
+            }//   Sequence s = DOTween.Sequence();
             //     s.Append(t);
 
             //    if(OnAnimationFinish != null)
